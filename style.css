@@ -1856,3 +1856,14 @@ a {
     padding: 0.85rem 0;
   }
 }
+
+/* Modal Body Image Styling */
+.modal-body-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  margin: 2.5rem auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  display: block;
+  border: 1px solid var(--glass-border);
+}

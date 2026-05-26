@@ -75,9 +75,12 @@ function parseMarkdown(markdown) {
   return htmlBlocks.join('\n');
 }
 
-// Convert inline formatting like bold and links
+// Convert inline formatting like bold, links, and images
 function parseInline(text) {
   let result = text;
+  
+  // Images: ![alt](url) -> <img src="url" alt="alt" class="modal-body-img">
+  result = result.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="modal-body-img">');
   
   // Bold: **text** -> <strong>text</strong>
   result = result.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
