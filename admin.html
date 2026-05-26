@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OctopusAve | Blog Admin Dashboard</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Custom Admin Styles overrides -->
+  <style>
+    body {
+      background: linear-gradient(135deg, #050a0f 0%, #0c151c 100%);
+      padding-top: 4rem;
+      min-height: 100vh;
+    }
+    
+    .admin-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    
+    .admin-title {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .admin-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+    }
+    
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    
+    @media (max-width: 1024px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .admin-section-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .admin-section-title span {
+      font-size: 0.8rem;
+      background: var(--aqua-glow);
+      color: var(--aqua-primary);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    /* Database Upload Box */
+    .upload-box {
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      background: rgba(255,255,255,0.01);
+      margin-bottom: 2rem;
+    }
+    
+    .upload-box:hover {
+      border-color: var(--aqua-primary);
+      background: rgba(0, 242, 254, 0.02);
+    }
+    
+    .upload-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    /* Current Posts list */
+    .post-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-height: 350px;
+      overflow-y: auto;
+      margin-bottom: 2.5rem;
+      padding-right: 0.5rem;
+    }
+    
+    .post-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--glass-border);
+    }
+    
+    .post-item-info h4 {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      max-width: 320px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .post-item-info span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    .delete-btn {
+      background: rgba(255, 126, 95, 0.1);
+      color: var(--coral-primary);
+      border: 1px solid rgba(255, 126, 95, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    
+    .delete-btn:hover {
+      background: var(--coral-primary);
+      color: #000;
+    }
+    
+    /* Composer Form */
+    .form-group-admin {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label-admin {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control-admin {
+      width: 100%;
+      background: rgba(7, 14, 20, 0.7);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition-fast);
+    }
+    
+    .form-control-admin:focus {
+      border-color: var(--aqua-primary);
+      box-shadow: 0 0 10px rgba(0,242,254,0.15);
+    }
+    
+    select.form-control-admin {
+      cursor: pointer;
+    }
+    
+    /* Editor styling */
+    .editor-toolbar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .tool-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      padding: 0.35rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    
+    .tool-btn:hover {
+      background: var(--glass-surface-hover);
+      color: #fff;
+      border-color: rgba(255,255,255,0.2);
+    }
+    
+    .composer-textarea {
+      min-height: 250px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    /* Previews */
+    .preview-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .preview-tab-btn {
+      background: none;
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    
+    .preview-tab-btn.active {
+      background: var(--aqua-primary);
+      color: #000;
+      border-color: transparent;
+      font-weight: 600;
+    }
+    
+    .preview-pane {
+      display: none;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      background: rgba(7, 14, 20, 0.4);
+      padding: 1.5rem;
+    }
+    
+    .preview-pane.active {
+      display: block;
+    }
+    
+    .preview-pane-modal {
+      padding: 0;
+      background: rgba(10, 20, 30, 0.9);
+    }
+    
+    /* Floating action instructions bar */
+    .instructions-card {
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border-left: 3px solid var(--aqua-primary);
+    }
+    
+    .instructions-card h4 {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--aqua-primary);
+    }
+    
+    .instructions-card ol {
+      padding-left: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    
+    .instructions-card li {
+      margin-bottom: 0.25rem;
+    }
+    
+    .export-cta-container {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .export-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    
+    .back-btn-header {
+      position: absolute;
+      top: 1.25rem;
+      left: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .back-btn-header:hover {
+      color: var(--aqua-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Glow Orbs -->
+  <div class="glow-orb orb-1" aria-hidden="true" style="top: 20%; left: 10%;"></div>
+  <div class="glow-orb orb-2" aria-hidden="true" style="bottom: 10%; right: 10%;"></div>
+
+  <!-- Header Navigation -->
+  <header class="glass-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="back-btn-header">
+        ← Back to Live Site
+      </a>
+      <div class="nav-logo" style="margin: 0 auto;">
+        <img src="assets/logo_octopus.png" alt="Octopus Logo" class="logo-img">
+        <span class="logo-text">Octopus<span>Admin</span></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-container">
+    <div class="text-center">
+      <h1 class="admin-title">OctopusAve Database Manager</h1>
+      <p class="admin-subtitle">Add, edit, or delete articles and export a fresh database for GitHub.</p>
+    </div>
+    
+    <div class="admin-grid">
+      <!-- Left Side: Database Loader, Current list, Add Form -->
+      <div class="admin-sidebar-controls">
+        
+        <!-- Instructions Panel -->
+        <div class="instructions-card glass-card">
+          <h4>💡 How to use this Dashboard:</h4>
+          <ol>
+            <li>Select your current <strong><code>blog-posts.json</code></strong> file in the box below to load your active posts.</li>
+            <li>Use the form below to write a new post (or delete existing sample posts).</li>
+            <li>Click <strong>Export blog-posts.json</strong> to download the updated database file.</li>
+            <li>Save the downloaded file over your old one in your local folder, commit, and push to GitHub!</li>
+          </ol>
+        </div>
+        
+        <!-- Upload/Load JSON panel -->
+        <div class="glass-card" style="padding: 2rem; margin-bottom: 2.5rem;">
+          <h3 class="admin-section-title">1. Load Current Database <span>Database</span></h3>
+          <div class="upload-box" id="dropzone">
+            <span class="upload-icon">📂</span>
+            <strong id="upload-status">Load blog-posts.json</strong>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem;">Click to select or drag the file here</p>
+            <input type="file" id="json-file-input" class="file-input" accept=".json">
+          </div>
+          
+          <h3 class="admin-section-title">Active Database Posts <span id="post-count-badge">1 Post</span></h3>
+          <div class="post-list" id="active-posts-container">
+            <!-- Loaded dynamically -->
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">No database loaded. Showing temporary offline posts. Select your blog-posts.json file above to load yours!</p>
+          </div>
+        </div>
+        
+        <!-- Add New Post Form -->
+        <div class="glass-card" style="padding: 2rem;">
+          <h3 class="admin-section-title">2. Compose New Post <span>Writer</span></h3>
+          
+          <form id="compose-form">
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="post-title">Article Title</label>
+              <input type="text" id="post-title" class="form-control-admin" placeholder="e.g. Designing a Coastal Modern Living Room" required>
+            </div>
+            
+            <div class="form-group-admin" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <label class="form-label-admin" for="post-category">Category</label>
+                <select id="post-category" class="form-control-admin">
+                  <option value="shore-life">Shore Life</option>
+                  <option value="seattle-guides">Seattle Guides</option>
+                  <option value="decor">Decor & DIY</option>
+                  <option value="vlog" selected>Social & Vlog</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label-admin" for="post-date">Publish Date</label>
+                <input type="text" id="post-date" class="form-control-admin" placeholder="e.g. May 25, 2026" required>
+              </div>
+            </div>
+            
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="post-image-select">Cover Image Asset</label>
+              <select id="post-image-select" class="form-control-admin" style="margin-bottom: 0.5rem;">
+                <option value="assets/logo_octopus.png">Logo Motif (assets/logo_octopus.png)</option>
+                <option value="assets/hero_beach.png">Alki Beach Cover (assets/hero_beach.png)</option>
+                <option value="assets/living_room.png">Shore Living Room (assets/living_room.png)</option>
+                <option value="custom">Custom Image Link...</option>
+              </select>
+              <input type="text" id="post-image-custom" class="form-control-admin" placeholder="Enter custom path (e.g. assets/my_photo.jpg)" style="display:none;">
+            </div>
+            
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="post-summary">Short Teaser Summary</label>
+              <input type="text" id="post-summary" class="form-control-admin" placeholder="A brief 1-2 sentence teaser shown on the home page..." required maxlength="200">
+            </div>
+            
+            <div class="form-group-admin">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+                <label class="form-label-admin" style="margin-bottom:0;">Full Article Content (HTML Support)</label>
+                <div class="editor-toolbar">
+                  <button type="button" class="tool-btn" data-tag="h2">H2 Header</button>
+                  <button type="button" class="tool-btn" data-tag="h3">H3 Header</button>
+                  <button type="button" class="tool-btn" data-tag="p">Paragraph</button>
+                  <button type="button" class="tool-btn" data-tag="bold">Bold</button>
+                  <button type="button" class="tool-btn" data-tag="list">Bullet List</button>
+                  <button type="button" class="tool-btn" data-tag="quote">Beach Quote</button>
+                </div>
+              </div>
+              <textarea id="post-content" class="form-control-admin composer-textarea" placeholder="Welcome to Octopus Ave! Type your article details here. You can use standard formatting tags." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 8px;">Add Post to Database List</button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Right Side: Real-Time Preview and Export Button -->
+      <div class="admin-sidebar-preview" style="position: sticky; top: 6rem;">
+        
+        <!-- Live Preview Panel -->
+        <div class="glass-card" style="padding: 2rem;">
+          <h3 class="admin-section-title">3. Real-Time Visual Preview <span>Live</span></h3>
+          
+          <div class="preview-tabs">
+            <button class="preview-tab-btn active" id="tab-card-btn">Blog Card</button>
+            <button class="preview-tab-btn" id="tab-modal-btn">Article Modal Reader</button>
+          </div>
+          
+          <!-- Feed Card Preview Pane -->
+          <div class="preview-pane active" id="pane-card">
+            <div class="blog-grid" style="grid-template-columns: 1fr; margin-top: 0; min-height: auto;">
+              <article class="blog-card glass-card" style="margin:0 auto; max-width: 380px;">
+                <div class="blog-card-img-box" id="pv-card-img-container">
+                  <img src="assets/logo_octopus.png" alt="" class="blog-card-img" id="pv-card-img">
+                  <span class="blog-card-badge" id="pv-card-badge">Vlog</span>
+                </div>
+                <div class="blog-card-content">
+                  <span class="blog-card-date" id="pv-card-date">Date</span>
+                  <h3 class="blog-card-title" id="pv-card-title">Article Title Preview</h3>
+                  <p class="blog-card-summary" id="pv-card-summary">This is a preview of the teaser description that visitors will read on the main page...</p>
+                  <div class="blog-card-footer">
+                    <span class="blog-card-readmore">Read Article <span>→</span></span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+          
+          <!-- Modal Reader Preview Pane -->
+          <div class="preview-pane preview-pane-modal" id="pane-modal">
+            <div class="modal-wrapper" style="max-height: 550px; overflow-y: auto;">
+              <header class="modal-header" style="position: relative; background: rgba(7, 14, 20, 0.9);">
+                <div class="modal-meta">
+                  <span class="modal-badge" id="pv-modal-badge">Vlog</span>
+                  <span class="modal-date" id="pv-modal-date">Date</span>
+                </div>
+                <button class="modal-close-btn" style="pointer-events: none;" aria-label="Close">
+                  <span style="font-size:1.2rem;">×</span>
+                </button>
+              </header>
+              <div class="modal-hero" style="height: 180px;">
+                <img src="assets/logo_octopus.png" alt="" id="pv-modal-img" class="modal-hero-img">
+                <div class="modal-hero-overlay"></div>
+                <h2 class="modal-title" id="pv-modal-title" style="font-size: 1.5rem; bottom: 1rem; padding: 0 1.5rem;">Article Title</h2>
+              </div>
+              <article class="modal-body-content" id="pv-modal-content" style="padding: 1.5rem; font-size: 1rem; line-height: 1.6;">
+                <!-- Article text preview -->
+              </article>
+              <footer class="modal-footer" style="padding: 1rem 1.5rem;">
+                <div class="modal-author-card">
+                  <img src="assets/logo_octopus.png" alt="" class="author-avatar" style="width:30px; height:30px;">
+                  <div class="author-info">
+                    <p class="author-name" style="font-size:0.8rem;">By OctopusAve</p>
+                  </div>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Export Box -->
+        <div class="export-cta-container">
+          <button class="btn btn-primary" id="export-database-btn" style="padding: 1.25rem 2rem; border-radius: 12px; font-size: 1.1rem; box-shadow: 0 4px 20px var(--coral-glow); background: var(--coral-gradient);">
+            💾 Export blog-posts.json
+          </button>
+          <p class="export-note">This generates a fresh database containing your edits. Save this file inside your local directory to update your website.</p>
+        </div>
+        
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Default Starting data
+      let articles = [
+        {
+          "id": 1,
+          "title": "Welcome to Octopus Ave!",
+          "summary": "The official launch of our blog and social media channels. Follow along as we share our West Seattle shore house lifestyle, coastal decor ideas, and PNW travel vlogs.",
+          "date": "May 25, 2026",
+          "category": "vlog",
+          "categoryLabel": "Social & Vlog",
+          "image": "assets/logo_octopus.png",
+          "content": "<h2>We are officially live!</h2><p>Welcome to our online avenue! We are a couple living right along the shores of West Seattle, and we are so excited to share our daily slice of Pacific Northwest heaven with you. Named after the actual street we live on, <strong>OctopusAve</strong> is a lifestyle channel documenting our home design projects, beachside routines, and favorite local travel spots.</p><p>We are starting this blog in tandem with our brand new channels—make sure to follow <strong>@OctopusAve</strong> on TikTok and Instagram to see our daily video reels, room styling transitions, and local vlogs!</p><h3>What You'll Find Here</h3><p>We want this blog to be an interactive companion to our videos, sharing detailed guides that don't fit into a short TikTok clip:</p><ul><li><strong>Coastal Modern Interior Design:</strong> Step-by-step DIY guides, styling tips, and tours showing how we balance high-end coastal luxury with cozy, organic PNW elements.</li><li><strong>West Seattle Travel Guides:</strong> Hyper-local recommendations for the best coffee walks, beach trials, vinyl crates, and sunset views in our neighborhood.</li><li><strong>Content Creator Journals:</strong> Behind-the-scenes vlogs of what it's like to build a brand, film in a shore house, and connect with other ocean lovers.</li></ul><p>We are so incredibly grateful to have you here at the very start of our journey. Grab a coffee, make yourself at home, and let's explore life by the water together!</p>"
+        }
+      ];
+
+      // Preset Category mapping
+      const categoryLabels = {
+        'shore-life': 'Shore Life',
+        'seattle-guides': 'Seattle Guides',
+        'decor': 'Decor & DIY',
+        'vlog': 'Social & Vlog'
+      };
+
+      // Set Date Input to Today by default
+      const formatDate = (date) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+      };
+      document.getElementById('post-date').value = formatDate(new Date());
+
+      // DOM Elements
+      const dropzone = document.getElementById('dropzone');
+      const fileInput = document.getElementById('json-file-input');
+      const uploadStatus = document.getElementById('upload-status');
+      const activePostsContainer = document.getElementById('active-posts-container');
+      const postCountBadge = document.getElementById('post-count-badge');
+      
+      const form = document.getElementById('compose-form');
+      const postTitle = document.getElementById('post-title');
+      const postCategory = document.getElementById('post-category');
+      const postDate = document.getElementById('post-date');
+      const postImageSelect = document.getElementById('post-image-select');
+      const postImageCustom = document.getElementById('post-image-custom');
+      const postSummary = document.getElementById('post-summary');
+      const postContent = document.getElementById('post-content');
+      
+      // Preview Elements
+      const pvCardImgContainer = document.getElementById('pv-card-img-container');
+      const pvCardImg = document.getElementById('pv-card-img');
+      const pvCardBadge = document.getElementById('pv-card-badge');
+      const pvCardDate = document.getElementById('pv-card-date');
+      const pvCardTitle = document.getElementById('pv-card-title');
+      const pvCardSummary = document.getElementById('pv-card-summary');
+      
+      const pvModalImg = document.getElementById('pv-modal-img');
+      const pvModalBadge = document.getElementById('pv-modal-badge');
+      const pvModalDate = document.getElementById('pv-modal-date');
+      const pvModalTitle = document.getElementById('pv-modal-title');
+      const pvModalContent = document.getElementById('pv-modal-content');
+      
+      const tabCardBtn = document.getElementById('tab-card-btn');
+      const tabModalBtn = document.getElementById('tab-modal-btn');
+      const paneCard = document.getElementById('pane-card');
+      const paneModal = document.getElementById('pane-modal');
+      const exportBtn = document.getElementById('export-database-btn');
+
+      // Initialize lists
+      const updatePostsList = () => {
+        activePostsContainer.innerHTML = '';
+        postCountBadge.textContent = `${articles.length} Post${articles.length === 1 ? '' : 's'}`;
+        
+        if (articles.length === 0) {
+          activePostsContainer.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 1.5rem 0;">No active posts in the database. Write a new one below!</p>`;
+          return;
+        }
+
+        articles.forEach((art, index) => {
+          const item = document.createElement('div');
+          item.className = 'post-list-item';
+          item.innerHTML = `
+            <div class="post-item-info">
+              <h4>${art.title}</h4>
+              <span>📅 ${art.date} | 🏷️ ${art.categoryLabel}</span>
+            </div>
+            <button class="delete-btn" data-index="${index}">Delete</button>
+          `;
+          
+          item.querySelector('.delete-btn').addEventListener('click', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-index'));
+            if (confirm(`Are you sure you want to delete "${articles[idx].title}"?`)) {
+              articles.splice(idx, 1);
+              updatePostsList();
+            }
+          });
+
+          activePostsContainer.appendChild(item);
+        });
+      };
+
+      // Try to dynamically fetch live blog-posts.json from the same local server on start
+      fetch('blog-posts.json')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            articles = data;
+            uploadStatus.textContent = 'Loaded blog-posts.json (Online)';
+            updatePostsList();
+          }
+        })
+        .catch(() => {
+          console.log('Running locally without a server. Awaiting file import.');
+        });
+
+      // Handle Image custom dropdown trigger
+      postImageSelect.addEventListener('change', () => {
+        if (postImageSelect.value === 'custom') {
+          postImageCustom.style.display = 'block';
+          postImageCustom.required = true;
+        } else {
+          postImageCustom.style.display = 'none';
+          postImageCustom.required = false;
+        }
+        updatePreview();
+      });
+
+      // File Import / Drag & Drop
+      dropzone.addEventListener('click', () => fileInput.click());
+      
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        readJsonFile(file);
+      });
+
+      // Drag and Drop
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = 'var(--aqua-primary)';
+      });
+
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.style.borderColor = 'rgba(255,255,255,0.15)';
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = 'rgba(255,255,255,0.15)';
+        const file = e.dataTransfer.files[0];
+        if (file && file.name.endsWith('.json')) {
+          readJsonFile(file);
+        } else {
+          alert('Please drop a valid .json file.');
+        }
+      });
+
+      const readJsonFile = (file) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (Array.isArray(data)) {
+              articles = data;
+              uploadStatus.textContent = `Loaded: ${file.name}`;
+              uploadStatus.style.color = 'var(--aqua-primary)';
+              updatePostsList();
+            } else {
+              alert('Invalid format. blog-posts.json must be a JSON array of articles.');
+            }
+          } catch (e) {
+            alert('Failed to parse file. Please verify it is a valid JSON file.');
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      // Form Text formatting helpers
+      const insertTag = (tagType) => {
+        const start = postContent.selectionStart;
+        const end = postContent.selectionEnd;
+        const text = postContent.value;
+        const selectedText = text.substring(start, end);
+        
+        let replacement = '';
+        switch(tagType) {
+          case 'h2':
+            replacement = `<h2>${selectedText || 'Subheading'}</h2>\n`;
+            break;
+          case 'h3':
+            replacement = `<h3>${selectedText || 'Section Title'}</h3>\n`;
+            break;
+          case 'p':
+            replacement = `<p>${selectedText || 'Enter paragraph details here...'}</p>\n`;
+            break;
+          case 'bold':
+            replacement = `<strong>${selectedText || 'bold text'}</strong>`;
+            break;
+          case 'list':
+            replacement = `<ul>\n  <li>${selectedText || 'Bullet point 1'}</li>\n  <li>Bullet point 2</li>\n</ul>\n`;
+            break;
+          case 'quote':
+            replacement = `<blockquote class="guide-quote">"${selectedText || 'Inspirational shore quote goes here.'}"</blockquote>\n`;
+            break;
+        }
+
+        postContent.value = text.substring(0, start) + replacement + text.substring(end);
+        postContent.focus();
+        postContent.setSelectionRange(start + replacement.length, start + replacement.length);
+        updatePreview();
+      };
+
+      document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          insertTag(btn.getAttribute('data-tag'));
+        });
+      });
+
+      // Previews Dynamic Sync
+      const updatePreview = () => {
+        const title = postTitle.value || 'Article Title Preview';
+        const summary = postSummary.value || 'This is a preview of the teaser description that visitors will read on the main page...';
+        const date = postDate.value || formatDate(new Date());
+        const cat = postCategory.value;
+        const catLabel = categoryLabels[cat];
+        
+        let img = postImageSelect.value;
+        if (img === 'custom') {
+          img = postImageCustom.value || 'assets/logo_octopus.png';
+        }
+
+        const content = postContent.value || '<p>Start typing in the editor box to preview your full article here...</p>';
+
+        // Set card UI
+        pvCardImg.src = img;
+        pvCardBadge.textContent = catLabel;
+        pvCardDate.textContent = date;
+        pvCardTitle.textContent = title;
+        pvCardSummary.textContent = summary;
+        
+        // Add container special class for logo
+        if (img === 'assets/logo_octopus.png') {
+          pvCardImgContainer.classList.add('dark-contain-box');
+        } else {
+          pvCardImgContainer.classList.remove('dark-contain-box');
+        }
+
+        // Set Modal UI
+        pvModalImg.src = img;
+        pvModalBadge.textContent = catLabel;
+        pvModalDate.textContent = date;
+        pvModalTitle.textContent = title;
+        pvModalContent.innerHTML = content;
+      };
+
+      // Listen for typing events to update preview
+      [postTitle, postSummary, postDate, postCategory, postContent, postImageCustom].forEach(el => {
+        el.addEventListener('input', updatePreview);
+      });
+
+      // Preview tabs switcher
+      tabCardBtn.addEventListener('click', () => {
+        tabCardBtn.classList.add('active');
+        tabModalBtn.classList.remove('active');
+        paneCard.classList.add('active');
+        paneModal.classList.remove('active');
+      });
+
+      tabModalBtn.addEventListener('click', () => {
+        tabModalBtn.classList.add('active');
+        tabCardBtn.classList.remove('active');
+        paneModal.classList.add('active');
+        paneCard.classList.remove('active');
+        updatePreview(); // Re-render content HTML structures
+      });
+
+      // Handle form submission
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const cat = postCategory.value;
+        let img = postImageSelect.value;
+        if (img === 'custom') {
+          img = postImageCustom.value;
+        }
+
+        // Create new article object
+        const newArt = {
+          id: articles.length > 0 ? Math.max(...articles.map(a => a.id)) + 1 : 1,
+          title: postTitle.value,
+          summary: postSummary.value,
+          date: postDate.value,
+          category: cat,
+          categoryLabel: categoryLabels[cat],
+          image: img,
+          content: postContent.value
+        };
+
+        // Add to active collection
+        articles.push(newArt);
+        updatePostsList();
+        
+        // Reset form details (except date & category for writing convenience)
+        postTitle.value = '';
+        postSummary.value = '';
+        postContent.value = '';
+        updatePreview();
+        
+        alert(`Successfully added "${newArt.title}" to database cache list!`);
+      });
+
+      // Handle JSON Database Export Download
+      exportBtn.addEventListener('click', () => {
+        if (articles.length === 0) {
+          if (!confirm('Warning: Exporting an empty database will delete all articles on the live site. Do you still want to proceed?')) {
+            return;
+          }
+        }
+        
+        const jsonStr = JSON.stringify(articles, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'blog-posts.json';
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Initial Update
+      updatePostsList();
+      updatePreview();
+    });
+  </script>
+</body>
+</html>
